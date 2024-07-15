@@ -6,7 +6,7 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 status = "Stopped"
-valid_statuses = ["Clips", "Live", "AI", "Rebooting", "Stopped"]
+valid_statuses = ["Clips", "Live", "Rebooting", "Stopped"]
 
 
 # Static files in clips

@@ -144,24 +144,7 @@
           })
       }
 
-      function startAIStream() {
-        const aiVideo = document.getElementById('aiVideo')
-        // Replace with your AI stream source
-        aiVideo.src = 'your_ai_stream_source'
-        aiVideo.play()
-      }
-
-      // List all available media devices
-      navigator.mediaDevices.enumerateDevices().then((devices) => {
-        // Filter video devices
-        const videoDevices = devices.filter(
-          (device) => device.kind === 'videoinput'
-        )
-        console.log('Available video devices: ', videoDevices)
-      })
-
       startLiveStream()
-      startAIStream()
     </script>
   </body>
 </html>
