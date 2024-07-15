@@ -5,52 +5,66 @@ import os
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-status = 'Stopped'
-valid_statuses = ['Clips', 'Live', 'Rebooting', 'Stopped']
+status = "Stopped"
+valid_statuses = ["Clips", "Live", "AI", "Rebooting", "Stopped"]
+
 
 # Static files in clips
-@app.route('/files/clip/<path:path>')
+@app.route("/files/clip/<path:path>")
 def serve_clip(path):
-    return send_file(os.path.join('clips', path))
+    return send_file(os.path.join("clips", path))
 
-@app.route('/files/static.webp')
+
+@app.route("/files/static.webp")
 def serve_static():
-    return send_file('static.webp')
+    return send_file("static.webp")
 
-@app.route('/')
+
+@app.route("/")
 def serve_client():
-    return send_file('client.html')
+    return send_file("client.html")
 
-@app.route('/server')
+
+@app.route("/socket.io.js")
+def serve_socketio():
+    return send_file("socket.io.js")
+
+
+@app.route("/server")
 def serve_server():
-    return send_file('server.html')
+    return send_file("server.html")
 
-@app.route('/files/clips')
+
+@app.route("/files/clips")
 def list_clips():
     # Ensure the clips directory exists to avoid errors
-    if not os.path.exists('clips'):
+    if not os.path.exists("clips"):
         return jsonify([])  # Return an empty list if the directory does not exist
-    clips = os.listdir('clips')
+    clips = os.listdir("clips")
     return jsonify(clips)
 
-@socketio.on('connect')
+
+@socketio.on("connect")
 def handle_connect():
-    print(f'a user connected, id: {request.sid}')
-    emit('status', status)
+    print(f"a user connected, id: {request.sid}")
+    emit("status", status)
 
-@socketio.on('disconnect')
+
+@socketio.on("disconnect")
 def handle_disconnect():
-    print(f'user disconnected, id: {request.sid}')
+    print(f"user disconnected, id: {request.sid}")
 
-@socketio.on('status')
+
+@socketio.on("status")
 def handle_status_update(data):
     if data not in valid_statuses:
         # print(f'invalid status update: {data}')
         return
-    print(f'status update: {data}')
+    print(f"status update: {data}")
     global status
     status = data
-    emit('status', data, broadcast=True)
+    emit("status", data, broadcast=True)
 
-if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=3000)
+
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=3000)
