@@ -45,7 +45,6 @@
   <body>
     <div>
       <video id="liveVideo" autoplay muted></video>
-      <video id="aiVideo" autoplay muted></video>
       <video id="clipVideo" muted></video>
       <img src="/files/static.webp" alt="Static" id="img" />
     </div>
@@ -66,30 +65,24 @@
       socket.on('status', (status) => {
         console.log('status: ' + status)
         const liveVideo = document.getElementById('liveVideo')
-        const aiVideo = document.getElementById('aiVideo')
         const clipVideo = document.getElementById('clipVideo')
         const img = document.getElementById('img')
 
         switch (status) {
           case 'Clips':
             img.style['z-index'] = -1
+            liveVideo.style['z-index'] = -1
+            clipVideo.style['z-index'] = 2
             playClip()
             break
           case 'Live':
             liveVideo.style['z-index'] = 2
-            aiVideo.style['z-index'] = -1
             clipVideo.style['z-index'] = -1
             img.style['z-index'] = -1
-            break
-          case 'AI':
-            aiVideo.style['z-index'] = 2
-            liveVideo.style['z-index'] = -1
-            clipVideo.style['z-index'] = -1
-            img.style['z-index'] = -1
+            startLiveStream()
             break
           case 'Stopped':
             liveVideo.pause()
-            aiVideo.pause()
             clipVideo.pause()
             img.style['z-index'] = 2
             break
@@ -116,16 +109,13 @@
             })
         } else {
           // Play clip
-          const video = document.getElementById('video')
           const clip = clips.pop()
-          video.src = 'files/clip/' + clip
-          video.play()
-          video.addEventListener('ended', () => {
-            document
-              .getElementById('video')
-              .removeEventListener('ended', () => {
-                playClip()
-              })
+          clipVideo.src = 'files/clip/' + clip
+          clipVideo.play()
+          clipVideo.addEventListener('ended', () => {
+            clipVideo.removeEventListener('ended', () => {
+              playClip()
+            })
             playClip()
           })
         }

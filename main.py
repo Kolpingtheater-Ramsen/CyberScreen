@@ -41,6 +41,7 @@ def list_clips():
     if not os.path.exists("clips"):
         return jsonify([])  # Return an empty list if the directory does not exist
     clips = os.listdir("clips")
+    clips = [clip for clip in clips if clip.endswith(".mp4")]
     return jsonify(clips)
 
 
