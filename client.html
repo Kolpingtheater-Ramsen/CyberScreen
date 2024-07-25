@@ -61,7 +61,8 @@
         // Fetch clip list
       })
 
-      // valid_statuses = ['Clips', 'Live', 'Rebooting', 'Stopped']
+      // get website hash
+      const hash = window.location.hash.substr(1)
       socket.on('status', (status) => {
         console.log('status: ' + status)
         const liveVideo = document.getElementById('liveVideo')
@@ -73,7 +74,7 @@
             img.style['z-index'] = -1
             liveVideo.style['z-index'] = -1
             clipVideo.style['z-index'] = 2
-            playClip()
+            playClip(0)
             break
           case 'Live':
             liveVideo.style['z-index'] = 2
@@ -93,30 +94,43 @@
         console.log('disconnected')
       })
 
-      function playClip() {
+      fetch('files/clips')
+        .then((res) => {
+          return res.json()
+        })
+        .then((data) => {
+          // If we have a hash only play clips with filter_[hash] in the name
+          if (hash) {
+            data = data.filter((clip) =>
+              clip.includes('filter_' + hash + '.mp4')
+            )
+            // Set video to loop
+            clipVideo.loop = true
+          } else {
+            data = data.filter((clip) => !clip.includes('filter_'))
+          }
+          // Shuffle clips
+          clips = data.sort(() => Math.random() - 0.5)
+          console.log(clips)
+        })
+
+      function playClip(i) {
         if (clips.length === 0) {
-          return fetch('/files/clips')
-            .then((res) => {
-              return res.json()
-            })
-            .then((data) => {
-              clips = data
-              console.log(clips)
-              // Shuffle clips
-              clips.sort(() => Math.random() - 0.5)
-              // Play first clip
-              playClip()
-            })
+          setTimeout(() => {
+            console.log('No clips found, retrying in 1s')
+            playClip(i)
+          }, 1000)
+          return
         } else {
           // Play clip
-          const clip = clips.pop()
+          const clip = clips[i % clips.length]
           clipVideo.src = 'files/clip/' + clip
           clipVideo.play()
           clipVideo.addEventListener('ended', () => {
             clipVideo.removeEventListener('ended', () => {
-              playClip()
+              playClip(i + 1)
             })
-            playClip()
+            playClip(i + 1)
           })
         }
       }
