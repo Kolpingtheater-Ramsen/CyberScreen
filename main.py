@@ -6,7 +6,7 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 status = "Stopped"
-valid_statuses = ["Clips", "Live", "Rebooting", "Stopped"]
+valid_statuses = ["Clips", "Live", "Rebooting", "Stopped", "Sewer", "Sunset"]
 
 
 # Static files in clips
@@ -15,9 +15,9 @@ def serve_clip(path):
     return send_file(os.path.join("clips", path))
 
 
-@app.route("/files/static.webp")
-def serve_static():
-    return send_file("static.webp")
+@app.route("/files/imgs/<path:path>")
+def serve_static(path):
+    return send_file(os.path.join("imgs", path))
 
 
 @app.route("/")

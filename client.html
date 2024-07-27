@@ -69,6 +69,7 @@
         const clipVideo = document.getElementById('clipVideo')
         const img = document.getElementById('img')
 
+        img.src = '/files/imgs/static.webp'
         switch (status) {
           case 'Clips':
             img.style['z-index'] = -1
@@ -81,6 +82,18 @@
             clipVideo.style['z-index'] = -1
             img.style['z-index'] = -1
             startLiveStream()
+            break
+          case 'Sewer':
+            liveVideo.pause()
+            clipVideo.pause()
+            img.style['z-index'] = 2
+            img.src = '/files/imgs/sewer.webp'
+            break
+          case 'Sunset':
+            liveVideo.pause()
+            clipVideo.pause()
+            img.style['z-index'] = 2
+            img.src = '/files/imgs/sunset.webp'
             break
           case 'Stopped':
             liveVideo.pause()
